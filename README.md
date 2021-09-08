@@ -6,6 +6,7 @@ Run the container:
 ```commandline
 docker run -p 8888:8888 -v *path_to_data_folder*:/src/static/ docker-jupyter 
 ```
+Notebook will be available here: http://127.0.0.1:8888/tree
 
 Folder with data (*path_to_data_folder*) is expected to have .csv files in a folder called "data".
 
