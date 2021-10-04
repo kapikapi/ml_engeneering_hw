@@ -1,0 +1,50 @@
+stages:
+  preprocess:
+    cmd: python src/preprocessing.py data/train.csv data/test.csv data/orders.csv
+    deps:
+    - data/orders.csv
+    - data/test.csv
+    - data/train.csv
+    - src/preprocessing.py
+    outs:
+    - data/prepared
+  fit_svd:
+    cmd: python src/fit_svd.py data/prepared/train_table.csv static/svd_model
+    deps:
+      - data/prepared/train_table.csv
+      - src/fit_svd.py
+    params:
+      - fit_svd.n_components
+    outs:
+      - static/svd_model
+  fit_top_rec:
+    cmd: python src/fit_top_recommender.py data/prepared/train_table.csv static/top_rec_model
+    deps:
+      - data/prepared/train_table.csv
+      - src/fit_top_recommender.py
+    outs:
+      - static/top_rec_model
+  predict_svd:
+    cmd: >
+      python src/predict_svd.py data/prepared/test_table.csv
+      static/svd_model/users_repres.npy static/svd_model/products_repres.npy
+      static/svd_model/user_pos.json static/svd_model/pos_product.json static/recs/svd
+    deps:
+      - static/svd_model
+      - src/predict_svd.py
+    params:
+      - predict_svd.n_recs
+      - predict_svd.batch_number
+    outs:
+      - static/recs/svd
+  predict_top:
+    cmd: >
+      python src/predict_top.py data/prepared/test_table.csv
+      static/top_rec_model/model.pickle static/recs/top
+    deps:
+      - static/top_rec_model
+      - src/predict_top.py
+    params:
+      - predict_top.n_recs
+    outs:
+      - static/recs/top

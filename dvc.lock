@@ -1,0 +1,97 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocessing.py data/train.csv data/test.csv data/orders.csv
+    deps:
+    - path: data/orders.csv
+      md5: 5c9eb03bafe45a24ea1963ef5a9620ec
+      size: 134604525
+    - path: data/test.csv
+      md5: ef505111e05dfec9e40b8a79d751774c
+      size: 1285892
+    - path: data/train.csv
+      md5: ee316c0b8fa103d5b40857cd1f3a860b
+      size: 32218111
+    - path: src/preprocessing.py
+      md5: 7fc2a17a75c1d6f70370318aecea031b
+      size: 852
+    outs:
+    - path: data/prepared
+      md5: c8d0ceaf971c1107494fb2ad71e8dc78.dir
+      size: 43970478
+      nfiles: 2
+  fit_svd:
+    cmd: python src/fit_svd.py data/prepared/train_table.csv static/svd_model
+    deps:
+    - path: data/prepared/train_table.csv
+      md5: b919e78200beedbc9ccd10a73ae18eb6
+      size: 42253984
+    - path: src/fit_svd.py
+      md5: e3c573abe7d4e2965fcf6a642c7e1273
+      size: 2671
+    - path: src/models
+      md5: 77712af0239278ef47dfc36a43d63ef5.dir
+      size: 4858
+      nfiles: 6
+    params:
+      params.yaml:
+        fit_svd.n_components: 500
+    outs:
+    - path: static/svd_model
+      md5: 04089f2b2be3ff4b2652904321f4e09b.dir
+      size: 181562303
+      nfiles: 4
+  fit_top_rec:
+    cmd: python src/fit_top_recommender.py data/prepared/train_table.csv static/top_rec_model
+    deps:
+    - path: data/prepared/train_table.csv
+      md5: b919e78200beedbc9ccd10a73ae18eb6
+      size: 42253984
+    - path: src/fit_top_recommender.py
+      md5: 0382b80c6f3c34eed74ccc076aadfbcd
+      size: 597
+    outs:
+    - path: static/top_rec_model
+      md5: fb9949fd156d5106870370e1e5960e96.dir
+      size: 247473
+      nfiles: 1
+  predict_svd:
+    cmd: "python src/predict_svd.py data/prepared/test_table.csv static/svd_model/users_repres.npy\
+      \ static/svd_model/products_repres.npy static/svd_model/user_pos.json static/svd_model/pos_product.json\
+      \ static/recs/svd\n"
+    deps:
+    - path: src/predict_svd.py
+      md5: 361541cb64b934f3041fb4dfc0f624ac
+      size: 2336
+    - path: static/svd_model
+      md5: 04089f2b2be3ff4b2652904321f4e09b.dir
+      size: 181562303
+      nfiles: 4
+    params:
+      params.yaml:
+        predict_svd.batch_number: 100
+        predict_svd.n_recs: 10
+    outs:
+    - path: static/recs/svd
+      md5: d3fb82b209c559a06e57f39efd0fe6ed.dir
+      size: 533194
+      nfiles: 2
+  predict_top:
+    cmd: "python src/predict_top.py data/prepared/test_table.csv static/top_rec_model/model.pickle\
+      \ static/recs/top\n"
+    deps:
+    - path: src/predict_top.py
+      md5: 3b63a03d0090e94a3a719212ad17f879
+      size: 1219
+    - path: static/top_rec_model
+      md5: fb9949fd156d5106870370e1e5960e96.dir
+      size: 247473
+      nfiles: 1
+    params:
+      params.yaml:
+        predict_top.n_recs: 10
+    outs:
+    - path: static/recs/top
+      md5: d6f9ec4793360713e53f716577fbce60.dir
+      size: 543922
+      nfiles: 2
