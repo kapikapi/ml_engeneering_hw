@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 import yaml
 import pickle
@@ -24,9 +26,12 @@ def predict_top(output_folder, test_data_path, model_path, n):
                         columns=['user_id', 'recs']).sort_values('user_id').reset_index(drop=True)
     recs.to_csv(output_folder + "/top_recs.csv")
 
-    metrics = print_metrics(true_recs, recs)
+    str_metrics, dict_metrics = print_metrics(true_recs, recs)
     with open(output_folder + "/top_metrics.txt", "w") as text_file:
-        text_file.write(metrics)
+        text_file.write(str_metrics)
+
+    with open(output_folder + "/top_metrics.json", "w") as metrics_file:
+        json.dump(dict_metrics, metrics_file)
 
 
 test_data_pth = sys.argv[1]

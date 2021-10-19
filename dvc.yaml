@@ -36,7 +36,11 @@ stages:
       - predict_svd.n_recs
       - predict_svd.batch_number
     outs:
-      - static/recs/svd
+      - static/recs/svd/svd_metrics.txt
+      - static/recs/svd/svd_recs.csv
+    metrics:
+      - static/recs/svd/svd_metrics.json:
+          cache: false
   predict_top:
     cmd: >
       python src/predict_top.py data/prepared/test_table.csv
@@ -47,4 +51,8 @@ stages:
     params:
       - predict_top.n_recs
     outs:
-      - static/recs/top
+      - static/recs/top/top_metrics.txt
+      - static/recs/top/top_recs.csv
+    metrics:
+      - static/recs/top/top_metrics.json:
+          cache: false

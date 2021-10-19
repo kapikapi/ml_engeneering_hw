@@ -49,9 +49,12 @@ def predict_svd(output_folder, test_data_path, model_paths, n, batch_num):
     recs = pd.DataFrame.from_records(result_list).sort_values('user_id').reset_index(drop=True)
     recs.to_csv(output_folder + "/svd_recs.csv")
 
-    metrics = print_metrics(true_recs, recs)
+    str_metrics, dict_metrics = print_metrics(true_recs, recs)
     with open(output_folder + "/svd_metrics.txt", "w") as text_file:
-        text_file.write(metrics)
+        text_file.write(str_metrics)
+
+    with open(output_folder + "/svd_metrics.json", "w") as metrics_file:
+        json.dump(dict_metrics, metrics_file)
 
 
 test_data_pth = sys.argv[1]

@@ -27,18 +27,14 @@ stages:
       md5: b919e78200beedbc9ccd10a73ae18eb6
       size: 42253984
     - path: src/fit_svd.py
-      md5: e3c573abe7d4e2965fcf6a642c7e1273
-      size: 2671
-    - path: src/models
-      md5: 77712af0239278ef47dfc36a43d63ef5.dir
-      size: 4858
-      nfiles: 6
+      md5: 90904c051221ee3fa76b73ecb1c6e940
+      size: 2746
     params:
       params.yaml:
         fit_svd.n_components: 500
     outs:
     - path: static/svd_model
-      md5: 04089f2b2be3ff4b2652904321f4e09b.dir
+      md5: 42673103b9002adeccdc3dbf81db202f.dir
       size: 181562303
       nfiles: 4
   fit_top_rec:
@@ -61,28 +57,33 @@ stages:
       \ static/recs/svd\n"
     deps:
     - path: src/predict_svd.py
-      md5: 361541cb64b934f3041fb4dfc0f624ac
-      size: 2336
+      md5: e484fd945610deb26adebec577f0b630
+      size: 2478
     - path: static/svd_model
-      md5: 04089f2b2be3ff4b2652904321f4e09b.dir
+      md5: 42673103b9002adeccdc3dbf81db202f.dir
       size: 181562303
       nfiles: 4
     params:
       params.yaml:
-        predict_svd.batch_number: 100
+        predict_svd.batch_number: 120
         predict_svd.n_recs: 10
     outs:
-    - path: static/recs/svd
-      md5: d3fb82b209c559a06e57f39efd0fe6ed.dir
-      size: 533194
-      nfiles: 2
+    - path: static/recs/svd/svd_metrics.json
+      md5: d3992e6ea7306412c3a45a4bcf61633d
+      size: 162
+    - path: static/recs/svd/svd_metrics.txt
+      md5: 93ee10c6b0933316a7a17e7cefcc41e3
+      size: 144
+    - path: static/recs/svd/svd_recs.csv
+      md5: 314cc06459ce5c1e7be1e5d3fa6c5f36
+      size: 533020
   predict_top:
     cmd: "python src/predict_top.py data/prepared/test_table.csv static/top_rec_model/model.pickle\
       \ static/recs/top\n"
     deps:
     - path: src/predict_top.py
-      md5: 3b63a03d0090e94a3a719212ad17f879
-      size: 1219
+      md5: c84ab0bd4fd0749fcc54be46062a923e
+      size: 1374
     - path: static/top_rec_model
       md5: fb9949fd156d5106870370e1e5960e96.dir
       size: 247473
@@ -91,7 +92,12 @@ stages:
       params.yaml:
         predict_top.n_recs: 10
     outs:
-    - path: static/recs/top
-      md5: d6f9ec4793360713e53f716577fbce60.dir
-      size: 543922
-      nfiles: 2
+    - path: static/recs/top/top_metrics.json
+      md5: 41e1c4435f0b4c820411f30a41af5bf6
+      size: 162
+    - path: static/recs/top/top_metrics.txt
+      md5: ff8be895e79c75db10916b0d4ba62c95
+      size: 144
+    - path: static/recs/top/top_recs.csv
+      md5: 55d835933389bbf1da0531058cbd7ef4
+      size: 543778
