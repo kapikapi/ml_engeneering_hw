@@ -1,14 +1,7 @@
 import pandas as pd
-import yaml
 import numpy as np
 import json
-import os
-import sys
 from metrics import print_metrics
-
-params = yaml.safe_load(open("params.yaml"))["predict_svd"]
-n_recs = params["n_recs"]
-batch_number = params["batch_number"]
 
 
 def _predict_batch(test_users_batch, n, users_repres, products_repres, user_pos, pos_user, pos_product):
@@ -56,13 +49,8 @@ def predict_svd(output_folder, test_data_path, model_paths, n, batch_num):
     with open(output_folder + "/svd_metrics.json", "w") as metrics_file:
         json.dump(dict_metrics, metrics_file)
 
+    return dict_metrics
 
-test_data_pth = sys.argv[1]
-model_pths = sys.argv[2:-1]
-output_pth = sys.argv[-1]
-os.makedirs(output_pth, exist_ok=True)
-
-predict_svd(output_pth, test_data_pth, model_pths, n_recs, batch_number)
 
 
 

@@ -42,9 +42,9 @@ def print_metrics(true_res, predicted_res, k_values=(3, 5, 10)):
         hit_rate_avg = round(avg_metric(true_res, predicted_res, hit_rate_k, k), 3)
         map_avg = round(avg_metric(true_res, predicted_res, map_k, k), 3)
         ndcg_avg = round(avg_metric(true_res, predicted_res, ndcg_k, k), 3)
-        metric_line = f'HitRate@{k}: {hit_rate_avg}; MAP@{k}: {map_avg}; NDCG@{k}: {ndcg_avg};'
+        metric_line = f'HitRate_{k}: {hit_rate_avg}; MAP@{k}: {map_avg}; NDCG@{k}: {ndcg_avg};'
         str_metrics += metric_line + '\n'
-        dict_metrics[f"HitRate@{k}"] = hit_rate_avg
-        dict_metrics[f"MAP@{k}"] = map_avg
-        dict_metrics[f"NDCG@{k}"] = ndcg_avg
+        dict_metrics[f"HitRate_{k}"] = hit_rate_avg
+        dict_metrics[f"MAP_{k}"] = map_avg
+        dict_metrics[f"NDCG_{k}"] = ndcg_avg
     return str_metrics, dict_metrics

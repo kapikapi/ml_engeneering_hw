@@ -31,11 +31,11 @@ stages:
       size: 2746
     params:
       params.yaml:
-        fit_svd.n_components: 500
+        fit_svd.n_components: 100
     outs:
     - path: static/svd_model
-      md5: 42673103b9002adeccdc3dbf81db202f.dir
-      size: 181562303
+      md5: dce2b2ef08c9eef0926182f75b2a3a1f.dir
+      size: 36871103
       nfiles: 4
   fit_top_rec:
     cmd: python src/fit_top_recommender.py data/prepared/train_table.csv static/top_rec_model
@@ -60,8 +60,8 @@ stages:
       md5: e484fd945610deb26adebec577f0b630
       size: 2478
     - path: static/svd_model
-      md5: 42673103b9002adeccdc3dbf81db202f.dir
-      size: 181562303
+      md5: dce2b2ef08c9eef0926182f75b2a3a1f.dir
+      size: 36871103
       nfiles: 4
     params:
       params.yaml:
@@ -69,14 +69,14 @@ stages:
         predict_svd.n_recs: 10
     outs:
     - path: static/recs/svd/svd_metrics.json
-      md5: d3992e6ea7306412c3a45a4bcf61633d
-      size: 162
+      md5: 0694edd46e0b6fc5897f3a5b892ecfcb
+      size: 161
     - path: static/recs/svd/svd_metrics.txt
-      md5: 93ee10c6b0933316a7a17e7cefcc41e3
-      size: 144
+      md5: 6644efcd90e16321aa071e6a15451193
+      size: 143
     - path: static/recs/svd/svd_recs.csv
-      md5: 314cc06459ce5c1e7be1e5d3fa6c5f36
-      size: 533020
+      md5: e8d4e22d3fcd75438c5ac51a5f23bffa
+      size: 531908
   predict_top:
     cmd: "python src/predict_top.py data/prepared/test_table.csv static/top_rec_model/model.pickle\
       \ static/recs/top\n"

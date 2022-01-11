@@ -1,17 +1,9 @@
 import pandas as pd
-import yaml
 from scipy.sparse import csr_matrix
 from sklearn.decomposition import TruncatedSVD
 
 import numpy as np
 import json
-import os
-import sys
-
-params = yaml.safe_load(open("params.yaml"))["fit_svd"]
-n_components = params["n_components"]
-random_seed = params["random_seed"]
-svd_columns = {'user': 'user_id', 'item': 'product_id', 'group_id': 'order_id'}
 
 
 def _get_counts_df(df, column_names):
@@ -55,13 +47,6 @@ def fit_svd_recommender(output_folder, train_data_path, cols, n_comp, random_sta
         json.dump(user_pos, write_file)
     with open(output_folder + "/pos_product.json", "w") as write_file:
         json.dump(pos_product, write_file)
-
-
-train_path = sys.argv[1]
-os.makedirs(sys.argv[2], exist_ok=True)
-output_folder_path = sys.argv[2]
-
-fit_svd_recommender(output_folder_path, train_path, svd_columns, n_components, random_seed)
 
 
 
