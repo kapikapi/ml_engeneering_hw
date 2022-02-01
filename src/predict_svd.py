@@ -3,7 +3,6 @@ import yaml
 import numpy as np
 import json
 import os
-import sys
 from metrics import print_metrics
 
 params = yaml.safe_load(open("params.yaml"))["predict_svd"]
@@ -24,7 +23,8 @@ def _predict_batch(test_users_batch, n, users_repres, products_repres, user_pos,
     return recs
 
 
-def predict_svd(output_folder, test_data_path, model_paths, n, batch_num):
+def predict_svd(output_folder, test_data_path, model_paths):
+    os.makedirs(output_folder, exist_ok=True)
     users_repres = np.load(model_paths[0])
     products_repres = np.load(model_paths[1])
 
@@ -39,10 +39,10 @@ def predict_svd(output_folder, test_data_path, model_paths, n, batch_num):
     test_users = list(set(test_data.user_id))
     true_recs = test_data.groupby('user_id')['product_id'].apply(list).reset_index(name='recs')
 
-    batches_users = np.array_split(test_users, batch_num)
+    batches_users = np.array_split(test_users, batch_number)
     result_list = []
     for batch in batches_users:
-        predicted_batch = _predict_batch(batch, n, users_repres=users_repres, products_repres=products_repres,
+        predicted_batch = _predict_batch(batch, n_recs, users_repres=users_repres, products_repres=products_repres,
                                          user_pos=user_pos, pos_user=pos_user, pos_product=pos_product)
         result_list += predicted_batch
 
@@ -56,13 +56,6 @@ def predict_svd(output_folder, test_data_path, model_paths, n, batch_num):
     with open(output_folder + "/svd_metrics.json", "w") as metrics_file:
         json.dump(dict_metrics, metrics_file)
 
-
-test_data_pth = sys.argv[1]
-model_pths = sys.argv[2:-1]
-output_pth = sys.argv[-1]
-os.makedirs(output_pth, exist_ok=True)
-
-predict_svd(output_pth, test_data_pth, model_pths, n_recs, batch_number)
 
 
 

@@ -6,7 +6,6 @@ from sklearn.decomposition import TruncatedSVD
 import numpy as np
 import json
 import os
-import sys
 
 params = yaml.safe_load(open("params.yaml"))["fit_svd"]
 n_components = params["n_components"]
@@ -30,7 +29,8 @@ def _get_interactions_matrix(train_data, column_names, user_pos, pos_user, produ
                       shape=(len(pos_user.keys()), len(pos_product.keys())))
 
 
-def fit_svd_recommender(output_folder, train_data_path, cols, n_comp, random_state=0):
+def fit_svd_recommender(output_folder, train_data_path):
+    os.makedirs(output_folder, exist_ok=True)
     train_data = pd.read_csv(train_data_path)
     train_users = set(train_data.user_id)
     train_products = set(train_data.product_id)
@@ -40,9 +40,9 @@ def fit_svd_recommender(output_folder, train_data_path, cols, n_comp, random_sta
     product_pos = {product: idx for idx, product in enumerate(train_products)}
     pos_product = {value: key for key, value in product_pos.items()}
 
-    interactions_matrix = _get_interactions_matrix(train_data, cols, user_pos=user_pos, pos_user=pos_user,
+    interactions_matrix = _get_interactions_matrix(train_data, svd_columns, user_pos=user_pos, pos_user=pos_user,
                                                    product_pos=product_pos, pos_product=pos_product)
-    svd_recommender = TruncatedSVD(random_state=random_state, n_components=n_comp)
+    svd_recommender = TruncatedSVD(random_state=random_seed, n_components=n_components)
     users_repres = svd_recommender.fit_transform(interactions_matrix)
     products_repres = svd_recommender.components_
     print(f'User representaions have size: {users_repres.shape}')
@@ -56,12 +56,6 @@ def fit_svd_recommender(output_folder, train_data_path, cols, n_comp, random_sta
     with open(output_folder + "/pos_product.json", "w") as write_file:
         json.dump(pos_product, write_file)
 
-
-train_path = sys.argv[1]
-os.makedirs(sys.argv[2], exist_ok=True)
-output_folder_path = sys.argv[2]
-
-fit_svd_recommender(output_folder_path, train_path, svd_columns, n_components, random_seed)
 
 
 
