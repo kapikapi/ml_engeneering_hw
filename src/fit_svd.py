@@ -7,11 +7,9 @@ import numpy as np
 import json
 import os
 
-params = yaml.safe_load(open("params.yaml"))["fit_svd"]
+params = yaml.safe_load(open("dags/params.yaml"))["fit_svd"]
 n_components = params["n_components"]
 random_seed = params["random_seed"]
-svd_columns = {'user': 'user_id', 'item': 'product_id', 'group_id': 'order_id'}
-
 
 def _get_counts_df(df, column_names):
     return (df
@@ -29,7 +27,9 @@ def _get_interactions_matrix(train_data, column_names, user_pos, pos_user, produ
                       shape=(len(pos_user.keys()), len(pos_product.keys())))
 
 
-def fit_svd_recommender(output_folder, train_data_path):
+def fit_svd_recommender(train_data_path, output_folder):
+    svd_columns = {'user': 'user_id', 'item': 'product_id', 'group_id': 'order_id'}
+
     os.makedirs(output_folder, exist_ok=True)
     train_data = pd.read_csv(train_data_path)
     train_users = set(train_data.user_id)

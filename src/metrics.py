@@ -48,3 +48,18 @@ def print_metrics(true_res, predicted_res, k_values=(3, 5, 10)):
         dict_metrics[f"MAP@{k}"] = map_avg
         dict_metrics[f"NDCG@{k}"] = ndcg_avg
     return str_metrics, dict_metrics
+
+
+def save_metrcis(test_data_path, output_svd, output_top):
+    test_data = pd.read_csv(test_data_path)
+    true_recs = test_data.groupby('user_id')['product_id'].apply(list).reset_index(name='recs')
+
+    recs_svd = pd.read_csv(output_svd + "/svd_recs.csv")
+    str_metrics_svd, dict_metrics_svd = print_metrics(true_recs, recs_svd)
+    with open(output_svd + "/svd_metrics.txt", "w") as text_file:
+        text_file.write(str_metrics_svd)
+
+    recs_top = pd.read_csv(output_top + "/top_recs.csv")
+    str_metrics_top, dict_metrics_top = print_metrics(true_recs, recs_top)
+    with open(output_top + "/top_metrics.txt", "w") as text_file:
+        text_file.write(str_metrics_top)

@@ -3,11 +3,6 @@ import yaml
 import numpy as np
 import json
 import os
-from metrics import print_metrics
-
-params = yaml.safe_load(open("params.yaml"))["predict_svd"]
-n_recs = params["n_recs"]
-batch_number = params["batch_number"]
 
 
 def _predict_batch(test_users_batch, n, users_repres, products_repres, user_pos, pos_user, pos_product):
@@ -23,7 +18,11 @@ def _predict_batch(test_users_batch, n, users_repres, products_repres, user_pos,
     return recs
 
 
-def predict_svd(output_folder, test_data_path, model_paths):
+def predict_svd(test_data_path, model_paths, output_folder):
+    params = yaml.safe_load(open("dags/params.yaml"))["predict_svd"]
+    n_recs = params["n_recs"]
+    batch_number = params["batch_number"]
+
     os.makedirs(output_folder, exist_ok=True)
     users_repres = np.load(model_paths[0])
     products_repres = np.load(model_paths[1])
@@ -37,7 +36,7 @@ def predict_svd(output_folder, test_data_path, model_paths):
 
     test_data = pd.read_csv(test_data_path)
     test_users = list(set(test_data.user_id))
-    true_recs = test_data.groupby('user_id')['product_id'].apply(list).reset_index(name='recs')
+    # true_recs = test_data.groupby('user_id')['product_id'].apply(list).reset_index(name='recs')
 
     batches_users = np.array_split(test_users, batch_number)
     result_list = []
@@ -48,13 +47,6 @@ def predict_svd(output_folder, test_data_path, model_paths):
 
     recs = pd.DataFrame.from_records(result_list).sort_values('user_id').reset_index(drop=True)
     recs.to_csv(output_folder + "/svd_recs.csv")
-
-    str_metrics, dict_metrics = print_metrics(true_recs, recs)
-    with open(output_folder + "/svd_metrics.txt", "w") as text_file:
-        text_file.write(str_metrics)
-
-    with open(output_folder + "/svd_metrics.json", "w") as metrics_file:
-        json.dump(dict_metrics, metrics_file)
 
 
 
